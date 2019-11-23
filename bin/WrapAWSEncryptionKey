@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp ../target/keywrapper-1.0.jar com.salesforce.shield.platformencryption.cli.WrapAWSEncryptionKey $@
+java -cp ../target/keywrapper-1.1.jar com.salesforce.shield.platformencryption.cli.WrapAWSEncryptionKey $@

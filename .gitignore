@@ -4,3 +4,7 @@ target/*
 .DS_Store
 *.iml
 *.log
+.settings
+.vscode
+.classpath
+.project

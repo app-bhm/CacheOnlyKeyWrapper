@@ -16,14 +16,27 @@ import java.security.PublicKey;
 
 public class KeyRepresentation {
 
+    private String jti; // JWT ID
     private String kid;
     private byte[] key;
     private PublicKey wrappingKey;
 
     public KeyRepresentation(String kid, byte[] key, PublicKey wrappingKey) {
+        this.jti = null;
         this.kid = kid;
         this.key = key;
         this.wrappingKey = wrappingKey;
+    }
+
+    public KeyRepresentation(String kid, byte[] key, PublicKey wrappingKey, String jti) {
+        this.jti = jti;
+        this.kid = kid;
+        this.key = key;
+        this.wrappingKey = wrappingKey;
+    }
+
+    public void setJti(String jti) {
+        this.jti = jti;
     }
 
     public void setKid(String kid) {
@@ -36,6 +49,10 @@ public class KeyRepresentation {
 
     public void setWrappingKey(PublicKey wrappingKey) {
         this.wrappingKey = wrappingKey;
+    }
+
+    public String getJti() {
+        return jti;
     }
 
     public String getKid() {
@@ -53,6 +70,9 @@ public class KeyRepresentation {
             jwe.setKeyIdHeaderValue(kid);
             jwe.setKey(wrappingKey);
             jwe.setPlaintext(key);
+            if(jti != null && !jti.isEmpty()){
+                jwe.setHeader("jti", jti);
+            }
             compactSerialization = jwe.getCompactSerialization();
         } catch (JoseException e) {
             System.out.println(e);

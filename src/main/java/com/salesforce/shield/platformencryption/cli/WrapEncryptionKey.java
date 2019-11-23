@@ -31,6 +31,7 @@ public class WrapEncryptionKey {
     public static void main(String[] args) {
 
         PublicKey publicWrappingKey = null;
+        String jti = null;
         String kid = null;
         boolean scriptGeneratedKey = true;
         byte[] byokKey = new byte[0];
@@ -46,6 +47,7 @@ public class WrapEncryptionKey {
         options.addOption( "c", "cert", true, "Path to Certificate File (required)" );
         options.addOption( "b", "bytes", true, "Hex Encoded BYOK AES KEY (optional)" );
         options.addOption( "i", "kid", true, "Key Identifier (optional)" );
+        options.addOption( "j", "jti", true, "Nonce with JWT Identifier (optional)" );
         options.addOption( "s", "split",false, "Protect Encryption key with Shamir's Secret Sharing (optional)" );
         options.addOption( "n", "num",true, "Number of N parts for Shamir's Secret Sharing (optional)" );
         options.addOption( "k", "know",true, "Knowledge of K pieces for Shamir's Secret Sharing (optional)" );
@@ -72,6 +74,11 @@ public class WrapEncryptionKey {
                 } else {
                     //or generate a random UUID for a kid
                     kid = UUID.randomUUID().toString();
+                }
+
+                if( line.hasOption( "j" ) ) {
+                    //JWT Identifier
+                    jti = line.getOptionValue( "j" );
                 }
 
                 if( line.hasOption( "b" ) ) {
@@ -110,7 +117,7 @@ public class WrapEncryptionKey {
                 }
 
                 //Write the wrapped key to a file
-                KeyRepresentation keyRepresentation = new KeyRepresentation(kid, byokKey, publicWrappingKey);
+                KeyRepresentation keyRepresentation = new KeyRepresentation(kid, byokKey, publicWrappingKey, jti);
                 FileOutputStream keyRepresentationFile = new FileOutputStream(kid);
                 keyRepresentationFile.write(keyRepresentation.toString().getBytes(StandardCharsets.UTF_8));
                 keyRepresentationFile.close();

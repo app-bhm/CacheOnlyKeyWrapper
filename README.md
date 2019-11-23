@@ -2,7 +2,7 @@
 
 ## Overview
 
-In Summer 18, Salesforce's Shield Platform Encryption is introducing a new pilot feature called Cache-Only Keys.  This capability enhances the existing Bring Your Own Key (BYOK) capability by allowing customers to host their key material in a wrapped format which Salesforce will fetch as required.  While this will be cached in an encrypted form, Salesforce will not retain or persist the key material in any system of record or backups. 
+In Summer 18, Salesforce's Shield Platform Encryption is introducing a new pilot feature called Cache-Only Keys.  This capability enhances the existing Bring Your Own Key (BYOK) capability by allowing customers to host their key material in a wrapped format which Salesforce will fetch as required.  While this will be cached in an encrypted form, Salesforce will not retain or persist the key material in any system of record or backups.
 
 When a key is needed by Salesforce for crypto operations, a callout is made directly to the customer's registered service to request the key.  The key exchange protocol and format requires that Keys are wrapped in a specific JSON format.  This project provides a sample utility to perform that wrapping, allowing customers to wrap their keys for hosting or provide the basis for understanding of how to build their own key service if desired.
 
@@ -11,7 +11,7 @@ When a key is needed by Salesforce for crypto operations, a callout is made dire
 
 Salesforce is expecting a 256bit AES key to be returned in a JSON response, and wrapped using JSON Web Encryption ([JWE](https://tools.ietf.org/html/rfc7516)).   The following specifies the overall response format, as well as the expected JWE format
 
-### The Response Format 
+### The Response Format
 
 Keys are wrapped in a JSON format.  For example here is a valid response:
 
@@ -24,25 +24,25 @@ Keys are wrapped in a JSON format.  For example here is a valid response:
 
 **Response Claims**
 
-* **"kid"** The unique ID of the key as defined by the customer.  This will be registered with Salesforce, and will be the resource requested by Salesforce when the key is required.  Allowed characters are  "a-z A-Z 0-9 . - _"   Valid examples might be a number "10", a string "2018_data_key", a UUID "982c375b-f46b-4423-8c2d-4d1a69152a0b".  
-* **"jwe"** The AES key wrapped in a JWE as specified below 
+* **"kid"** The unique ID of the key as defined by the customer.  This will be registered with Salesforce, and will be the resource requested by Salesforce when the key is required.  Allowed characters are  "a-z A-Z 0-9 . - _"   Valid examples might be a number "10", a string "2018_data_key", a UUID "982c375b-f46b-4423-8c2d-4d1a69152a0b".
+* **"jwe"** The AES key wrapped in a JWE as specified below
 
 
-### The JWE Format 
+### The JWE Format
 
 If you're not familiar with JWE, it stands for JSON Web Encryption and represents encrypted content using JSON-based data structures.  You can read more about it in [RFC7516](https://tools.ietf.org/html/rfc7516)
 
-While JWE allows for a variety of cryptographic algorithms and respresentations, Shield Platform Encryption only allows for a specific use of JWE, ensuring clear usage guidlines and appropriate protections for customer keys.  Opinionated crypto is a good thing (assuming you like our opinion)   Specificaly we are using a JWE with RSAES-OAEP and AES GCM as illustrated in [Appendix A1 of the RFC](https://tools.ietf.org/html/rfc7516#appendix-A.1)                                  
+While JWE allows for a variety of cryptographic algorithms and respresentations, Shield Platform Encryption only allows for a specific use of JWE, ensuring clear usage guidlines and appropriate protections for customer keys.  Opinionated crypto is a good thing (assuming you like our opinion)   Specificaly we are using a JWE with RSAES-OAEP and AES GCM as illustrated in [Appendix A1 of the RFC](https://tools.ietf.org/html/rfc7516#appendix-A.1)
 
 #### Prerequisites
 
 **Generate a Data Encryption Key**
 
-As the entire point of Cache-Only Keys is to allow customers to bring their own data encryption key, the JWE format starts with an 256bit AES key as the payload which will be protected.  We will refer to this as the Data Encruuption Key or DEK.  It is the customer's responsbility to generate this DEK, and do so in a cryptographically secure fashion.    
+As the entire point of Cache-Only Keys is to allow customers to bring their own data encryption key, the JWE format starts with an 256bit AES key as the payload which will be protected.  We will refer to this as the Data Encruuption Key or DEK.  It is the customer's responsbility to generate this DEK, and do so in a cryptographically secure fashion.
 
 **Generate a Content Encryption Key**
 
-To wrap the DEK appropriately we'll first generate a content encryption key.  This is a 256 bit AES key, and it will be used to wrap the DEK.  It is the customer's responsbility to generate this CEK, and do so in a cryptographically secure fashion.   
+To wrap the DEK appropriately we'll first generate a content encryption key.  This is a 256 bit AES key, and it will be used to wrap the DEK.  It is the customer's responsbility to generate this CEK, and do so in a cryptographically secure fashion.
 
 **Generate a BYOK Certificate**
 
@@ -50,7 +50,7 @@ With the DEK and CEK in place, we'll first protect the CEK so it can be passed t
 
 #### Construct your JWE
 
-Next, you'll actually generate your JWE.  This involves creating the header, wrapping the CEK with your BYOK Certificate, wrapping your DEK with your CEK wrap your CEK, and assembling it all into the JWE format.   
+Next, you'll actually generate your JWE.  This involves creating the header, wrapping the CEK with your BYOK Certificate, wrapping your DEK with your CEK wrap your CEK, and assembling it all into the JWE format.
 
 The JWE Compact Serialization is represented as follows:
 
@@ -93,7 +93,7 @@ l92QA-R7b6Gtjo0tG4GlylJti1-Pf-519YpStYOp28YToMxgUxPmx4NR_myvfT24oBCWkh6hy_dqAL7J
 
 **Next, Generate an Initialization Vector**
 
-Generate a random Initialization Vector to be used as input to the AES wrapping of the DEK.  Encode this Initialization Vector as BASE64URL(Initialization Vector) 
+Generate a random Initialization Vector to be used as input to the AES wrapping of the DEK.  Encode this Initialization Vector as BASE64URL(Initialization Vector)
 
 The result might look like this:
 
@@ -117,7 +117,7 @@ Encode the resulting ciphertext as BASE64URL(Ciphertext) and encode the Authenti
 63wRVVKX0ZOxu8cKqN1kqN-7EDa_mnmk32DinS_zFo4
 ```
 
-and 
+and
 
 ```
 HC7Ev5lmsbTgwyGpeGH5Rw
@@ -134,13 +134,13 @@ eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00iLCJraWQiOiI5ODJjMzc1Yi1mNDZiLTQ0MjMt
 
 ### Putting it all together
 
-You'll now host this wrapped key inside of the key reponse at a location Salesforce can request.  To secure this, Cache-Only Keys leverage a feature called [Named Credentials](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm) 
+You'll now host this wrapped key inside of the key reponse at a location Salesforce can request.  To secure this, Cache-Only Keys leverage a feature called [Named Credentials](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm)
 
-Named Credentials provide customers a way to make secure web service calls that leverage popular authentication formats.  All calls that go through the Named Credential are wrapped transparently in the authentication and security layers that are declared in the connection.  
+Named Credentials provide customers a way to make secure web service calls that leverage popular authentication formats.  All calls that go through the Named Credential are wrapped transparently in the authentication and security layers that are declared in the connection.
 
-Register a named credential with the URL of your key service or the service that will be hosting the wrapped file.  Provide this file at the path that is relative to your registered URL and matches the ID of your key.  
+Register a named credential with the URL of your key service or the service that will be hosting the wrapped file.  Provide this file at the path that is relative to your registered URL and matches the ID of your key.
 
-For example, if you registered https://byok.customer.com/keys/ as your named credential, using Basic Authentication with a username and password of  Aladdin:OpenSesame, and a Key Identifier of 982c375b-f46b-4423-8c2d-4d1a69152a0b, then Salesforce would make a web service request to 
+For example, if you registered https://byok.customer.com/keys/ as your named credential, using Basic Authentication with a username and password of  Aladdin:OpenSesame, and a Key Identifier of 982c375b-f46b-4423-8c2d-4d1a69152a0b, then Salesforce would make a web service request to
 
 ```
 https://byok.customer.com/keys/982c375b-f46b-4423-8c2d-4d1a69152a0b
@@ -171,21 +171,43 @@ HTTP/1.1 200 OK
 }
 ```
 
-### Using this Utility 
+### Add Replay Detection for Cache-Only Keys
+https://developer.salesforce.com/docs/atlas.en-us.222.0.securityImplGuide.meta/securityImplGuide/security_pe_byok_cache_replay.htm
+Replay detection protects your cache-only keys if a callout is fraudulently intercepted. When enabled, replay detection inserts an autogenerated, unique marker called a RequestIdentifier into every callout. The RequestIdentifier includes the key identifier, a nonce generated for that callout instance, and the nonce required from the endpoint. The RequestIdentifier serves as a random, one-time identifier for each valid callout request. Once you set up your key service to accept and return the RequestIdentifier, any callout with missing or mismatched RequestIdentifiers is aborted.
+
+1.Update your key service to extract the nonce generated for the callout instance from the RequestIdentifier. Here’s what the nonce looks like.
+
+```
+e5ab58fd2ced013f2a46d5c8144dd439
+```
+
+2.Echo this nonce in the JWE protected header, along with the algorithm used to encrypt the content encryption key, the algorithm used to encrypt the data encryption key, and the unique ID of the cache-only key. Here’s an example.
+
+```
+{"alg":"RSA-OAEP","enc":"A256GCM","kid":"982c375b-f46b-4423-8c2d-4d1a69152a0b","jti":"e5ab58fd2ced013f2a46d5c8144dd439"}
+```
+
+3.From Setup, enter Platform Encryption in the Quick find box, and click Advanced Settings.
+4.Select Enable Replay Detection for Cache-Only Keys.
+You can also enable replay detection programmatically. For more information, see EncryptionKeySettings in the Metadata API Developer Guide.
+From now on, every callout to an external key service includes a unique RequestIdentifier.
+
+### Using this Utility
 
 ---
 
 Run `mvn package` to build the application
 
-Run the WrapEncryptionKey utility in the ./bin directory.   It will give you description of it's options as follows 
+Run the WrapEncryptionKey utility in the ./bin directory.   It will give you description of it's options as follows
 
 ```
-$ ./WrapEncryptionKey 
+$ ./WrapEncryptionKey
 usage: WrapEncryptionKey
  -b,--bytes <arg>   Path to Hex Encoded BYOK AES KEY (optional)
  -c,--cert <arg>    Path to Certificate File (required)
  -h,--help          Help for WrapEncryptionKey
  -i,--kid <arg>     Key Identifier (optional)
+ -j,--jti <arg>     Nonce with JWT Identifier (optional)
  -k,--know <arg>    Knowledge of K pieces for Shamir's Secret Sharing
                     (optional)
  -n,--num <arg>     Number of N parts for Shamir's Secret Sharing
@@ -198,7 +220,7 @@ usage: WrapEncryptionKey
 
 Or, run the WrapAWSEncryptionKey utility which allows for you to generate keys using Amazon KMS instead of providing or generating one locally.
 ```
-$ ./WrapAWSEncryptionKey 
+$ ./WrapAWSEncryptionKey
 usage: WrapAWSEncryptionKey
   -a,--alias <arg>        AWS CMK Alias (required)
   -ak,--accesskey <arg>   AWS Access Key (required)
